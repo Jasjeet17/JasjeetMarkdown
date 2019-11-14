@@ -1,9 +1,9 @@
 ---
-title: A short title that describes your work
+title: Processing of commercial white/precursor fibre into black/carbon fibre
 subtitle: 
-author:  Your Name
-affiliation: CSIRO Business Unit # Or group/team
-photo: resources/img/photo.jpeg
+author:  Jasjeet Kaur
+affiliation: Fibre innovation and composites group in CSIRO Manufacturing 
+photo: resources/img/pic (4).jpg
 
 short_title: Optional short title
 
@@ -17,32 +17,37 @@ knitr::opts_chunk$set(
   message = FALSE,
   fig.align = 'center'
 )
+knitr::opts_knit$set(root.dir = "C:/Users/kau019/Documents/Data School Focus Program/Day 3/JasjeetMarkdown/")
 
 #Load libraries
 library(tidyverse)
-library(gapminder)
+#library(gapminder) 
 library(kableExtra)
+library(readxl)
+Jilin_carbonisation_data_july2019 <-
+read_excel("../Data/Jilin_carbonisation_July_2019JK.xlsx", sheet=1)
 ```
 
 
 # Introduction
-Introduce *yourself*. What's your background? Could you code before Data School? What did your 
-daily work pattern look like before Data School? Etc. This section will be placed in 
-an introductory block at the top of the page separate from the rest of the content. Don't change the section title from "Introduction" otherwise this process won't work correctly.
+I am a Research Scientist in **Carbon Fibre Precursor development**. It's my 6th year at CSIRO after a 5 year postdoc. I had no clue how coding worked prior to **Data School Focus** and used _Microsoft Excel_ and _Origin_ to plot. 
+
+The dataset I have brought to Data School has multiple predictor variables which influence each other. Analysing and plotting this data was a daunting task as it would take so much time and effort. Hence, most analysis was done only on the final fibre instead of the fibres collected at each stage of processing.  
+
 
 # My Project
-Rather than yourself, this is the space to introduce your **project**. What are 
-your goals, what was your data, how do you plan to work with it? Perhaps show some example data if 
-it would help.
 
-In order to build this demo poster correctly, you will also need to have installed the `tidyverse`, 
-`gapminder`, and `kableExtra` packages.
+**Goals**: Overall goal is to tidy data, visualise and communicate. The project goal is to find out the processing conditions to produce **strongest and stiffest carbon fibre** and understand the influence of each tratment zone.
+
+**Data**: Data was collected from 14 experiments performed on pilot scale carbon fibre production line. The fibres were collected after each treatment zone and also at the end of the processing. The predictor variables in the data are _speed, temperature, zones, tension_. The response variables in the data are _strength, stiffness, diameter, elongation_. 
+
+      
+**Work plan**:  Work plan is to use subset of data and compare it. The comparison will be made not only on the final fibre but also on the fibres  collected along the process after each treatment zone.
+
 
 ## Preliminary results
 
-This section will demonstrate the different visuals you might want use to show off your 
-project. Don't feel the need to go overboard, this is supposed to give a taste of the work you are
-doing rather than being a publication ready document.
+In the first subset, 3 experiments were chosen that varied in speed of processing line. The 3 speeds were 14,22 and 30 metre/hour.
 
 To get tables formatting correctly, use `knitr::kable` to convert the table to html format. If
 you also want to have alternate row highlighting, pass the result to `kable_styling('striped')` 
@@ -50,8 +55,8 @@ from the `kableExtra` package.
 
 **Tables**
 ```{r mytable, out.width='100%', echo = T}
-knitr::kable(head(gapminder, n = 5), format = "html", caption = "A table of data") %>% 
-  kable_styling("striped")
+#knitr::kable(head(gapminder, n = 5), format = "html", caption = "A table of data") %>% 
+ # kable_styling("striped")
 ```
 
 **Images from a file**
@@ -59,16 +64,51 @@ knitr::kable(head(gapminder, n = 5), format = "html", caption = "A table of data
 ![](resources/img/tidyverse.png){width=100px}
 
 **Plots from R**
-```{r standard-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Yet another gapminder plot"}
-gapminder %>% 
-  filter(year == 1987) %>% 
-  ggplot(aes(x = gdpPercap, y = lifeExp, colour = continent, size = pop)) +
-  geom_point() +
-  scale_x_log10(labels = function(b) format(b, scientific = F)) +
-  scale_size(trans = "sqrt", guide = "none") +
-  scale_color_brewer(palette = "Set1") +
-  theme_linedraw() +
-  theme(legend.position = "bottom")
+```{r standard-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on tensile strength and diameter of oxidised fibres"}
+
+  Experiment_a <- Jilin_carbonisation_data_july2019 %>%
+  filter(Experiment %in% c(1,2,3)) %>%
+  filter(Zones %in% c("Zone 1","Zone 2","Zone 3", "Zone 4"))
+
+Experiment_a$Zones<-as.factor(Experiment_a$Zones)
+Experiment_a$Tensile_Strength<- as.numeric(Experiment_a$Tensile_Strength)
+Experiment_a$Diameter <- as.numeric(Experiment_a$Diameter)
+Experiment_a$Experiment<-as.factor(Experiment_a$Experiment)
+Experiment_a$Emax <- as.numeric(Experiment_a$Emax)
+Experiment_a$Ini.Modul <- as.numeric(Experiment_a$Ini.Modul)
+Experiment_b <- Experiment_a%>% 
+  mutate(Zones=fct_relevel(Zones,"Zone 1","Zone 2","Zone 3", "Zone 4"))
+Line_speed_plot1 <- ggplot(data=Experiment_b,mapping = aes(x = Diameter, y = Tensile_Strength , colour = Experiment)) +
+  geom_point() + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,15,3,4)) + ylab("Tensile Strength (GPa)") + facet_wrap(~ Zones)
+Line_speed_plot1
+
+
+
+```
+```{r carbon-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on tensile strength and diameter of carbon fibres"}
+
+  
+# plot graph by changing variables on various axis
+Experiment_c <- Jilin_carbonisation_data_july2019 %>%
+  filter(Experiment %in% c(1,2,3)) %>%
+  filter(Zones %in% c("LT3","HT2"))
+#str(Experiment_c)
+# Recode your variables 
+Experiment_c$Zones<-as.factor(Experiment_c$Zones)
+Experiment_c$Tensile_Strength<- as.numeric(Experiment_c$Tensile_Strength)
+Experiment_c$Diameter <- as.numeric(Experiment_c$Diameter)
+Experiment_c$Experiment<-as.factor(Experiment_c$Experiment)
+Experiment_c$Emax <- as.numeric(Experiment_c$Emax)
+Experiment_c$Ini.Modul <- as.numeric(Experiment_c$Ini.Modul)
+#str(Experiment_c)
+Experiment_d <- Experiment_c%>% 
+  mutate(Zones=fct_relevel(Zones,"LT3","HT2"))
+#str(Experiment_d)
+Line_speed_plot3 <- ggplot(data=Experiment_d,mapping = aes(x = Diameter , y = Tensile_Strength, colour = Experiment)) +
+  geom_point() + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,7,5,3,4)) + ylab ("Tensile Strength (GPa)") + facet_wrap(~ Zones) 
+Line_speed_plot3 
+
+
 ```
 
 Your figure and table captions are automatically numbered and can be referenced in the text
