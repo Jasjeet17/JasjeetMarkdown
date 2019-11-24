@@ -1,5 +1,9 @@
 ---
-title: Processing of commercial white/precursor fibre into black/carbon fibre
+output: 
+  html_document:
+    code_folding: show
+
+title: Carbon fibre precursor development
 subtitle: 
 author:  Jasjeet Kaur
 affiliation: Fibre innovation and composites group in CSIRO Manufacturing 
@@ -7,7 +11,6 @@ photo: resources/img/pic (4).jpg
 
 short_title: Optional short title
 
-output: DSreport::project_summary
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -30,24 +33,23 @@ read_excel("../Data/Jilin_carbonisation_July_2019JK.xlsx", sheet=1)
 
 
 # Introduction
-I am a Research Scientist in **Carbon Fibre Precursor development**. It's my 6th year at CSIRO after a 5 year postdoc. I had no clue how coding worked prior to **Data School Focus** and used _Microsoft Excel_ and _Origin_ to plot. 
-
-The dataset I have brought to Data School has multiple predictor variables which influence each other. Analysing and plotting this data was a daunting task as it would take so much time and effort. Hence, most analysis was done only on the final fibre instead of the fibres collected at each stage of processing.  
+I am a Research Scientist in **Carbon Fibre Precursor development**. I did not know how to code prior to **Data School Focus** but was always curious to learn. My daily routine included designing and performing experiments followed by processing data and its analysis using _Origin_ and  _Microsoft Excel_. I work on a pilot scale wet spinning line which turns novel polymers into fibres and involves many predictor variables for optimisation. Large amount of data is generated from testing the fibres which makes analysis a tedious and time consuming task and a lag in feeding complete learnings of one experiment to the next.
 
 
 # My Project
 
-**Goals**: Overall goal is to tidy data, visualise and communicate. The project goal is to find out the processing conditions to produce **strongest and stiffest carbon fibre** and understand the influence of each tratment zone.
+I am developing high quality precursors for making stronger and stiffer carbon fibres from novel polymers. Carbon fibre manufacturing consists of three steps:
 
-**Data**: Data was collected from 14 experiments performed on pilot scale carbon fibre production line. The fibres were collected after each treatment zone and also at the end of the processing. The predictor variables in the data are _speed, temperature, zones, tension_. The response variables in the data are _strength, stiffness, diameter, elongation_. 
+- Synthesis of polymers
 
-      
-**Work plan**:  Work plan is to use subset of data and compare it. The comparison will be made not only on the final fibre but also on the fibres  collected along the process after each treatment zone.
+- Spinning of polymer solutions into precursor fibres
 
+- Conversion of precursor fibres into carbon fibres
+
+The final carbon fibre produced is influenced by all the variables involved in the above three steps. This makes optimisation very complex. Understanding evolution of fibre characteristics at every step along the process is important. But analysis of the collected data becomes a cumbersome task. My goal through Data School Focus is to become efficient in tidying and visualising data. My project goal is to find out the processing conditions to produce **strongest and stiffest carbon fibre** and understand the influence of each treatment zone. My data was collected from 14 experiments performed on a commercial precursor using pilot scale carbon fibre production line. The fibres were collected after each treatment zone and also at the end of the processing. The predictor variables in the data were _speed, temperature, zones, tension_. The response variables in the data were _strength, stiffness, diameter, elongation_. I have only used a subset of my data for this poster. The evolution of fibre properties (strength) was studied during conversion of precursor fibre into carbon fibre. 
+In the first subset, 3 experiments were chosen that varied in speed of processing line. The 3 speeds were 14(exp 1),22(exp 2) and 30 (exp 3) in metre/hour.
 
 ## Preliminary results
-
-In the first subset, 3 experiments were chosen that varied in speed of processing line. The 3 speeds were 14,22 and 30 metre/hour.
 
 To get tables formatting correctly, use `knitr::kable` to convert the table to html format. If
 you also want to have alternate row highlighting, pass the result to `kable_styling('striped')` 
@@ -55,7 +57,7 @@ from the `kableExtra` package.
 
 **Tables**
 ```{r mytable, out.width='100%', echo = T}
-#knitr::kable(head(gapminder, n = 5), format = "html", caption = "A table of data") %>% 
+#knitr::kable(head(Jilin_carbonisation_July_2019JK, n = 5), format = "html", caption = "A table of data") %>% 
  # kable_styling("striped")
 ```
 
@@ -65,21 +67,23 @@ from the `kableExtra` package.
 
 **Plots from R**
 ```{r standard-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on tensile strength and diameter of oxidised fibres"}
-
+# Filtering only a subset of data where line speed was changed and for only oxidation
   Experiment_a <- Jilin_carbonisation_data_july2019 %>%
   filter(Experiment %in% c(1,2,3)) %>%
   filter(Zones %in% c("Zone 1","Zone 2","Zone 3", "Zone 4"))
-
+# Converting chr into numeric and factors
 Experiment_a$Zones<-as.factor(Experiment_a$Zones)
-Experiment_a$Tensile_Strength<- as.numeric(Experiment_a$Tensile_Strength)
+Experiment_a$Tenacity<- as.numeric(Experiment_a$Tenacity)
 Experiment_a$Diameter <- as.numeric(Experiment_a$Diameter)
 Experiment_a$Experiment<-as.factor(Experiment_a$Experiment)
 Experiment_a$Emax <- as.numeric(Experiment_a$Emax)
 Experiment_a$Ini.Modul <- as.numeric(Experiment_a$Ini.Modul)
+# Relevel zones to get required sequence in legend
 Experiment_b <- Experiment_a%>% 
   mutate(Zones=fct_relevel(Zones,"Zone 1","Zone 2","Zone 3", "Zone 4"))
-Line_speed_plot1 <- ggplot(data=Experiment_b,mapping = aes(x = Diameter, y = Tensile_Strength , colour = Experiment)) +
-  geom_point() + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,15,3,4)) + ylab("Tensile Strength (GPa)") + facet_wrap(~ Zones)
+# Visualisation 
+Line_speed_plot1 <- ggplot(data=Experiment_b,mapping = aes(x = Diameter, y = Tenacity , colour = Experiment)) +
+  geom_point(alpha = 0.7) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,15,3,4)) + ylab("Tenacity (cN/dtex)") + xlab("Diameter (µm)") + xlim(10,13) + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Oxidation process") + theme(plot.title = element_text(hjust = 0.5))  
 Line_speed_plot1
 
 
@@ -88,24 +92,26 @@ Line_speed_plot1
 ```{r carbon-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on tensile strength and diameter of carbon fibres"}
 
   
-# plot graph by changing variables on various axis
+# Filtering data for only carbonisation
 Experiment_c <- Jilin_carbonisation_data_july2019 %>%
   filter(Experiment %in% c(1,2,3)) %>%
   filter(Zones %in% c("LT3","HT2"))
 #str(Experiment_c)
-# Recode your variables 
+# Change variables from characters to numbers and factors 
 Experiment_c$Zones<-as.factor(Experiment_c$Zones)
-Experiment_c$Tensile_Strength<- as.numeric(Experiment_c$Tensile_Strength)
+Experiment_c$Tenacity<- as.numeric(Experiment_c$Tenacity)
 Experiment_c$Diameter <- as.numeric(Experiment_c$Diameter)
 Experiment_c$Experiment<-as.factor(Experiment_c$Experiment)
 Experiment_c$Emax <- as.numeric(Experiment_c$Emax)
 Experiment_c$Ini.Modul <- as.numeric(Experiment_c$Ini.Modul)
 #str(Experiment_c)
+#Relevel zones to get the sequence of legends
 Experiment_d <- Experiment_c%>% 
   mutate(Zones=fct_relevel(Zones,"LT3","HT2"))
 #str(Experiment_d)
-Line_speed_plot3 <- ggplot(data=Experiment_d,mapping = aes(x = Diameter , y = Tensile_Strength, colour = Experiment)) +
-  geom_point() + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,7,5,3,4)) + ylab ("Tensile Strength (GPa)") + facet_wrap(~ Zones) 
+#Visualisation
+Line_speed_plot3 <- ggplot(data=Experiment_d,mapping = aes(x = Diameter , y = Tenacity, colour = Experiment)) +
+  geom_point(alpha = 0.5) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,7,5,3,4)) + ylab ("Tenacity (cN/dtex)") +  xlab("Diameter (µm)") + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Low and high temperature carbonisation process") + theme(plot.title = element_text(hjust = 0.5))  
 Line_speed_plot3 
 
 
@@ -114,40 +120,41 @@ Line_speed_plot3
 Your figure and table captions are automatically numbered and can be referenced in the text
 if needed: see eg. Table \@ref(tab:mytable) and Figure \@ref(fig:standard-plot)
 
+It can be seen from the graphs that although there doesn't appear to be difference in strength of final carbon fibre after carbonisation, there does appear to be difference in fibre properties when I fibre was evolving through oxidation process. This should be statistically tested in the next step.
+
+
 # My Digital Toolbox
 
-What digital tools have you been using in your project? Which ones have you learned since starting 
-Data School?
+- `tidyverse` for programming
+- `ggplot2`for visualisation
+- `Knitr` and `KableExtra` to create this html document
 
-You can use all the usual R markdown features in writing a project summary, including lists:
 
-* R - dplyr, ggplot, ...
-* Python
-* SQL
 
 ## Favourite tool (optional)
 
-Is there a tool/package/function in particular that you've enjoyed using? Give it a special shout out here.
+Some of my favourite functions are `str()`,`filter()`. I enjoyed using `ggplot2`
 
 ![](https://raw.githubusercontent.com/tidyverse/ggplot2/master/man/figures/logo.png){.pull-right width=100px}
 
-No prizes for guessing mine:
 
 # My time went ...
 
-What parts of the project took the most time and effort? Were there any surprising challenges you
-encountered, and how did you solve them?
+I easily sailed through the lesson days and activities but I was nervous on practical days while working on my own data set, especially when I encountered problems. The helpers and instructors were extremely knowledgable and patiently solved the queries. One of the challenge in my data set was inconsistent white space.  
 
 # Next steps
 
-What further steps do you wish your project could take? Or are there any new digital skills that you
-are keen to develop as a result of your involvement in the Data School?
+Data school has given me skills to manage my data and be able to return to it and reuse it. I would like to polish my R skills down the track. 
 
 # My Data School Experience
 
-This poster is mostly about your synthesis project. However we would also like to hear about other
+
 parts of your Data School experience. What aspects of the program did you really enjoy? How have you
 been applying the skills you have learned in your daily work? Have you been able to transfer this 
 knowledge to your team members? Concrete examples demonstrating this would be useful here
 (meetings/talks/collaborations/new roles). Any descriptions of the personal impact the program has 
 had are welcome here as well!
+Line_speed_plot1 <- ggplot(data=Experiment_b,mapping = aes(x = Diameter, y = Tenacity , colour = Experiment)) +
+  geom_point(alpha = 0.7) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,15,3,4)) + ylab("Tenacity (cN/dtex)") + xlab("Diameter (µm)") + xlim(10,13) + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Oxidation process") + theme(plot.title = element_text(hjust = 0.5))  
+Line_speed_plot1
+
