@@ -27,6 +27,7 @@ library(tidyverse)
 #library(gapminder) 
 library(kableExtra)
 library(readxl)
+library(cowplot)
 Jilin_carbonisation_data_july2019 <-
 read_excel("../Data/Jilin_carbonisation_July_2019JK.xlsx", sheet=1)
 ```
@@ -78,15 +79,18 @@ Experiment_a$Diameter <- as.numeric(Experiment_a$Diameter)
 Experiment_a$Experiment<-as.factor(Experiment_a$Experiment)
 Experiment_a$Emax <- as.numeric(Experiment_a$Emax)
 Experiment_a$Ini.Modul <- as.numeric(Experiment_a$Ini.Modul)
+Experiment_a$Ini.Mod <- as.numeric(Experiment_a$Ini.Mod)
 # Relevel zones to get required sequence in legend
 Experiment_b <- Experiment_a%>% 
   mutate(Zones=fct_relevel(Zones,"Zone 1","Zone 2","Zone 3", "Zone 4"))
 # Visualisation 
 Line_speed_plot1 <- ggplot(data=Experiment_b,mapping = aes(x = Diameter, y = Tenacity , colour = Experiment)) +
-  geom_point(alpha = 0.7) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,15,3,4)) + ylab("Tenacity (cN/dtex)") + xlab("Diameter (µm)") + xlim(10,13) + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Oxidation process") + theme(plot.title = element_text(hjust = 0.5))  
+  geom_point(alpha = 0.7) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,15,3,4)) + ylab("Tenacity (cN/dtex)") + xlab("Diameter (µm)") + xlim(10,13) + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Strength of fibres during oxidation") + theme(plot.title = element_text(hjust = 0.5))  
 Line_speed_plot1
-
-
+# Visualisation of modulus
+Line_speed_plot2 <- ggplot(data=Experiment_b,mapping = aes(x = Diameter, y = Ini.Mod , colour = Experiment)) +
+  geom_point(alpha = 0.7) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,15,3,4)) + ylab("Ini. Mod (cN/dtex)") + xlab("Diameter (µm)") + xlim(10,13) + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Stiffness of fibres during oxidation") + theme(plot.title = element_text(hjust = 0.5))  
+Line_speed_plot2
 
 ```
 ```{r carbon-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on tensile strength and diameter of carbon fibres"}
@@ -95,7 +99,7 @@ Line_speed_plot1
 # Filtering data for only carbonisation
 Experiment_c <- Jilin_carbonisation_data_july2019 %>%
   filter(Experiment %in% c(1,2,3)) %>%
-  filter(Zones %in% c("LT3","HT2"))
+  filter(Zones %in% c("LT3","HT2", "Tow"))
 #str(Experiment_c)
 # Change variables from characters to numbers and factors 
 Experiment_c$Zones<-as.factor(Experiment_c$Zones)
@@ -104,17 +108,19 @@ Experiment_c$Diameter <- as.numeric(Experiment_c$Diameter)
 Experiment_c$Experiment<-as.factor(Experiment_c$Experiment)
 Experiment_c$Emax <- as.numeric(Experiment_c$Emax)
 Experiment_c$Ini.Modul <- as.numeric(Experiment_c$Ini.Modul)
+Experiment_c$Ini.Mod <- as.numeric(Experiment_c$Ini.Mod)
 #str(Experiment_c)
 #Relevel zones to get the sequence of legends
 Experiment_d <- Experiment_c%>% 
-  mutate(Zones=fct_relevel(Zones,"LT3","HT2"))
+  mutate(Zones=fct_relevel(Zones,"LT3","HT2","Tow"))
 #str(Experiment_d)
 #Visualisation
 Line_speed_plot3 <- ggplot(data=Experiment_d,mapping = aes(x = Diameter , y = Tenacity, colour = Experiment)) +
-  geom_point(alpha = 0.5) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,7,5,3,4)) + ylab ("Tenacity (cN/dtex)") +  xlab("Diameter (µm)") + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Low and high temperature carbonisation process") + theme(plot.title = element_text(hjust = 0.5))  
+  geom_point(alpha = 0.5) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,7,5,3,4)) + ylab ("Tenacity (cN/dtex)") +  xlab("Diameter (µm)") + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Strength of fibres during carbonisation") + theme(plot.title = element_text(hjust = 0.5))  
 Line_speed_plot3 
-
-
+Line_speed_plot4 <- ggplot(data=Experiment_d,mapping = aes(x = Diameter , y = Ini.Mod, colour = Experiment)) +
+  geom_point(alpha = 0.5) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,7,5,3,4)) + ylab ("Ini.Mod (cN/dtex)") +  xlab("Diameter (µm)") + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Stiffness of fibres during carbonisation") + theme(plot.title = element_text(hjust = 0.5))  
+Line_speed_plot4
 ```
 
 Your figure and table captions are automatically numbered and can be referenced in the text
