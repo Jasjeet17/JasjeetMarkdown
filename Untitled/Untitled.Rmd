@@ -1,11 +1,11 @@
 ---
-title: Carbon fibre precursor development
+title: Carbon Fibre Precursor Development
 subtitle: 
 author:  Jasjeet Kaur
-affiliation: Fibre innovation and composites group in CSIRO Manufacturing 
+affiliation: Fibre Innovation and Composites, CSIRO Manufacturing 
 photo: resources/img/pic (4).jpg
 
-short_title: Carbon fibre 
+short_title: Carbon Fibre 
 output: 
   DSreport::project_summary:
     toc: TRUE
@@ -69,7 +69,10 @@ kable_styling("striped")
 ```
 
 
-# Preliminary results 
+# Preliminary results and discussion
+
+It can be seen from Figure \@ref(fig:carbon-plot) that there doesn't appear to be any difference in the strength of final carbon fibre due to change in the processing speeds. But when we look at Figure \@ref(fig:standard-plot) there does appear to be difference in fibre properties when fibre evolves through oxidation process. This difference is even more obvious in 
+Figure \@ref(fig:second-plot) which is a measurement of fibre stiffness. So these visualisations of raw data helped to understand that there is a difference in the mechanical properties of the fibre in the oxidation process but this effect doesn not seem to have translated in the carbonisation process. This may inform that the conditions used for low temperature carbonisation are not optimised and need to be investigated further. 
 
 
 ```{r standard-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on tenacity and diameter of oxidised fibres"}
@@ -137,10 +140,6 @@ Line_speed_plot4
 
 ```
 
-# Discussion
-
-It can be seen from Figure \@ref(fig:carbon-plot) that there doesn't appear to be any difference in the strength of final carbon fibre due to change in the processing speeds. But when we look at Figure \@ref(fig:standard-plot) there does appear to be difference in fibre properties when fibre evolves through oxidation process. This difference is even more obvious in 
-Figure \@ref(fig:second-plot) which is a measurement of fibre stiffness. So these visualisations of raw data helped to understand that there is a difference in the mechanical properties of the fibre in the oxidation process but this effect doesn not seem to have translated in the carbonisation process. This may inform that the conditions used for low temperature carbonisation are not optimised and need to be investigated further. 
 
 
 # My Digital Toolbox
