@@ -16,7 +16,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   results = 'asis',
-  echo = FALSE,
+  echo = TRUE,
   warning = FALSE,
   message = FALSE,
   fig.align = 'center'
@@ -55,8 +55,11 @@ The final carbon fibre produced is influenced by all the variables involved in t
 
 ```{r mytable, out.width='100%', echo = T}
 Tidy_table <- Jilin_carbonisation_data_july2019 %>%
- select(Experiment, Fibre, Line_speed, Zones, Diameter, Tenacity, Ini.Mod)
-knitr::kable(head (Tidy_table), format = "html", caption = "Predictor and response variables in the experiments") %>% 
+ select(Experiment, Fibre, Line_speed, Zones, Diameter, Tenacity, Ini.Mod) 
+  Tidy_table$Diameter<-as.numeric(Tidy_table$Diameter)
+  Tidy_table$Tenacity<-as.numeric(Tidy_table$Tenacity)
+  Tidy_table$Ini.Mod<-as.numeric(Tidy_table$Ini.Mod)
+knitr::kable(head (Tidy_table), format = "html", digits = 2, caption = "Predictor and response variables in the experiments") %>% 
 kable_styling("striped")
 ```
 
@@ -132,7 +135,7 @@ Line_speed_plot4
 ```
 
 
-It can be seen from the \@ref(fig:standard-plot) that although there doesn't appear to be difference in strength of final carbon fibre after carbonisation, there does appear to be difference in fibre properties when I fibre was evolving through oxidation process. This should be statistically tested in the next step.
+It can be seen from Figure\@ref(fig:carbon-plot) that there doesn't appear to be any difference in the strength of final carbon fibre due to change in the processing speeds. But when we look at Figure\@ref(fig:standard-plot) there does appear to be difference in fibre properties when fibre evolves through oxidation process. This difference is even more obvious in Figure\@ref(fig:second-plot) which is stiffness of the fibre. So these figures helped to understand that there is a difference in the mechanical properties of the fibre in the oxidation process but this effect seem to be disappearing after the carbonisation process.
 
 
 # My Digital Toolbox
