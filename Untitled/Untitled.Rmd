@@ -5,8 +5,13 @@ author:  Jasjeet Kaur
 affiliation: Fibre innovation and composites group in CSIRO Manufacturing 
 photo: resources/img/pic (4).jpg
 
-short_title: Optional short title
-output: DSreport::project_summary
+short_title: Carbon fibre 
+output: 
+  DSreport::project_summary:
+    toc: TRUE
+    toc_float: TRUE
+    code_folding: hide
+  
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -44,19 +49,21 @@ I am developing high quality precursors for making stronger and stiffer carbon f
 
 - Conversion of precursor fibres into carbon fibres
 
+![](resources/img/whitefibre.png){width=250px}
+
 The final carbon fibre produced is influenced by all the variables involved in the above three steps. This makes optimisation very complex. Understanding evolution of fibre characteristics at every step along the process is important. But analysis of the collected data becomes a cumbersome task. My goal through Data School Focus is to become efficient in tidying and visualising data. My project goal is to find out the processing conditions to produce **strongest and stiffest carbon fibre** and understand the influence of each treatment zone. My data was collected from 14 experiments performed on a commercial precursor using pilot scale carbon fibre production line. The fibres were collected after each treatment zone and also at the end of the processing. The predictor variables in the data were _speed, temperature, zones, tension_. The response variables in the data were _strength, stiffness, diameter, elongation_. I have only used a subset of my data for this poster. 
 
 ```{r mytable, out.width='100%', echo = T}
-#knitr::kable(head(Jilin_carbonisation_July_2019JK, n = 5), format = "html", caption = "A table of data") %>% 
- # kable_styling("striped")
+Tidy_table <- Jilin_carbonisation_data_july2019 %>%
+ select(Experiment, Fibre, Line_speed, Zones, Diameter, Tenacity, Ini.Mod)
+knitr::kable(head (Tidy_table), format = "html", caption = "Predictor and response variables in the experiments") %>% 
+kable_styling("striped")
 ```
 
 
-![](resources/img/whitefibre.png){width=100px}
+# Preliminary results 
 
-# Visualisation of data using `ggplot2`
-
-Evoution of fibre properties (strength) was studied during conversion of precursor fibre into carbon fibre. In the first subset, 3 experiments were chosen that varied in speed of processing line. The 3 speeds were 14(exp 1),22 (exp 2) and 30 (exp 3) in metre/hour. It can be seen that with the change in line speed both strength and stiffness change from Zone 1 to Zone 4 in the oxidation process and then at the carbonisation process this change is not obvious or the difference seems to be lost at the final fibre collection point.
+Evoution of mechanical properties of the fibres were studied during conversion of precursor fibre into carbon fibre. In the first subset, 3 experiments were chosen that varied in speed of processing line. The 3 speeds were 14 (exp 1), 22 (exp 2) and 30 (exp 3) in metre/hour. It can be seen that with the change in line speed both strength and stiffness changed from Zone 1 to Zone 4 in the oxidation process and then at the carbonisation process this change is not obvious or the difference seems to be lost at the final fibre collection point.
 
 
 ```{r standard-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on tenacity and diameter of oxidised fibres"}
@@ -80,6 +87,8 @@ Experiment_b <- Experiment_a%>%
 Line_speed_plot1 <- ggplot(data=Experiment_b,mapping = aes(x = Diameter, y = Tenacity , colour = Experiment)) +
   geom_point(alpha = 0.7) + scale_colour_manual(values = c("red","green","purple"))  + ylab("Tenacity (cN/dtex)") + xlab("Diameter (µm)") + xlim(10,13) + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Strength of fibres during oxidation") + theme(plot.title = element_text(hjust = 0.5))  
 Line_speed_plot1
+```
+```{r second-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on initial modulus and diameter of oxidised fibres"}
 
 Line_speed_plot2 <- ggplot(data=Experiment_b,mapping = aes(x = Diameter, y = Ini.Mod , colour = Experiment)) +
   geom_point(alpha = 0.7) + scale_colour_manual(values = c("red","green","purple"))  + ylab("Ini. Mod (cN/dtex)") + xlab("Diameter (µm)") + xlim(10,13) + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Stiffness of fibres during oxidation") + theme(plot.title = element_text(hjust = 0.5))  
@@ -111,15 +120,19 @@ Experiment_d <- Experiment_c%>%
 Line_speed_plot3 <- ggplot(data=Experiment_d,mapping = aes(x = Diameter , y = Tenacity, colour = Experiment)) +
   geom_point(alpha = 0.5) + scale_colour_manual(values = c("red","green","purple"))  + ylab ("Tenacity (cN/dtex)") +  xlab("Diameter (µm)") + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Strength of fibres during carbonisation") + theme(plot.title = element_text(hjust = 0.5))  
 Line_speed_plot3 
+```
+
+
+```{r third-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on initial modulus and diameter of carbon fibres"}
+
 Line_speed_plot4 <- ggplot(data=Experiment_d,mapping = aes(x = Diameter , y = Ini.Mod, colour = Experiment)) +
   geom_point(alpha = 0.5) + scale_colour_manual(values = c("red","green","purple"))  + ylab ("Ini.Mod (cN/dtex)") +  xlab("Diameter (µm)") + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Stiffness of fibres during carbonisation") + theme(plot.title = element_text(hjust = 0.5))  
 Line_speed_plot4
+
 ```
 
-Your figure and table captions are automatically numbered and can be referenced in the text
-if needed: see eg. Table \@ref(tab:mytable) and Figure \@ref(fig:standard-plot)
 
-It can be seen from the graphs that although there doesn't appear to be difference in strength of final carbon fibre after carbonisation, there does appear to be difference in fibre properties when I fibre was evolving through oxidation process. This should be statistically tested in the next step.
+It can be seen from the \@ref(fig:standard-plot) that although there doesn't appear to be difference in strength of final carbon fibre after carbonisation, there does appear to be difference in fibre properties when I fibre was evolving through oxidation process. This should be statistically tested in the next step.
 
 
 # My Digital Toolbox
@@ -143,15 +156,10 @@ I easily sailed through the lesson days and activities but I was nervous on prac
 
 # Next steps
 
-Data school has given me skills to manage my data and to be able to return to it and reuse it. I would like to polish my R skills down the track. 
+Data school has given me skills to manage my data and to be able to return to it and reuse it. I would like to polish my R skills down the track and would also like to learn Python.
 
 # My Data School Experience
 
-Data School Focus was a great learning experience. I enjoyed all aspects of data management including tidying, visualisation and creating a markdown document for communication. I am excited that the skills I have learnt will allow me to automate my analysis and will save me time. I will be able to
+Data School Focus was a great learning experience. I enjoyed all aspects of data management including tidying, visualisation and creating a markdown document for communication. Thanks to Stephen, kerensa, Alex and all the helpers who were extremely knowledgeable. I am excited that the skills I have learnt in Data School will allow me to think about data management from the very beginning of the project. Now I have the tools like the Research Data Planner to be able to initiate discussions with my team mates on how to have a healthy data ecosystem. Thanks to the librarians for the lesson. Having learnt some R skills now, I am not scared of large datasets. The entire Data School Cohort has been so friendly. Last but not the least, big thanks to Nat for being an amazing go to person.
 
-parts of your Data School experience. What aspects of the program did you really enjoy? How have you
-been applying the skills you have learned in your daily work? Have you been able to transfer this 
-knowledge to your team members? Concrete examples demonstrating this would be useful here
-(meetings/talks/collaborations/new roles). Any descriptions of the personal impact the program has 
-had are welcome here as well!
 
