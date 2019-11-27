@@ -1,8 +1,4 @@
 ---
-output: 
-  html_document:
-    code_folding: show
-
 title: Carbon fibre precursor development
 subtitle: 
 author:  Jasjeet Kaur
@@ -10,7 +6,7 @@ affiliation: Fibre innovation and composites group in CSIRO Manufacturing
 photo: resources/img/pic (4).jpg
 
 short_title: Optional short title
-
+output: DSreport::project_summary
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -28,6 +24,7 @@ library(tidyverse)
 library(kableExtra)
 library(readxl)
 library(cowplot)
+library(shiny)
 Jilin_carbonisation_data_july2019 <-
 read_excel("../Data/Jilin_carbonisation_July_2019JK.xlsx", sheet=1)
 ```
@@ -47,29 +44,25 @@ I am developing high quality precursors for making stronger and stiffer carbon f
 
 - Conversion of precursor fibres into carbon fibres
 
-The final carbon fibre produced is influenced by all the variables involved in the above three steps. This makes optimisation very complex. Understanding evolution of fibre characteristics at every step along the process is important. But analysis of the collected data becomes a cumbersome task. My goal through Data School Focus is to become efficient in tidying and visualising data. My project goal is to find out the processing conditions to produce **strongest and stiffest carbon fibre** and understand the influence of each treatment zone. My data was collected from 14 experiments performed on a commercial precursor using pilot scale carbon fibre production line. The fibres were collected after each treatment zone and also at the end of the processing. The predictor variables in the data were _speed, temperature, zones, tension_. The response variables in the data were _strength, stiffness, diameter, elongation_. I have only used a subset of my data for this poster. The evolution of fibre properties (strength) was studied during conversion of precursor fibre into carbon fibre. 
-In the first subset, 3 experiments were chosen that varied in speed of processing line. The 3 speeds were 14(exp 1),22(exp 2) and 30 (exp 3) in metre/hour.
+The final carbon fibre produced is influenced by all the variables involved in the above three steps. This makes optimisation very complex. Understanding evolution of fibre characteristics at every step along the process is important. But analysis of the collected data becomes a cumbersome task. My goal through Data School Focus is to become efficient in tidying and visualising data. My project goal is to find out the processing conditions to produce **strongest and stiffest carbon fibre** and understand the influence of each treatment zone. My data was collected from 14 experiments performed on a commercial precursor using pilot scale carbon fibre production line. The fibres were collected after each treatment zone and also at the end of the processing. The predictor variables in the data were _speed, temperature, zones, tension_. The response variables in the data were _strength, stiffness, diameter, elongation_. I have only used a subset of my data for this poster. 
 
-## Preliminary results
-
-To get tables formatting correctly, use `knitr::kable` to convert the table to html format. If
-you also want to have alternate row highlighting, pass the result to `kable_styling('striped')` 
-from the `kableExtra` package.
-
-**Tables**
 ```{r mytable, out.width='100%', echo = T}
 #knitr::kable(head(Jilin_carbonisation_July_2019JK, n = 5), format = "html", caption = "A table of data") %>% 
  # kable_styling("striped")
 ```
 
-**Images from a file**
 
-![](resources/img/tidyverse.png){width=100px}
+![](resources/img/whitefibre.png){width=100px}
 
-**Plots from R**
-```{r standard-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on tensile strength and diameter of oxidised fibres"}
+# Visualisation of data using `ggplot2`
+
+Evoution of fibre properties (strength) was studied during conversion of precursor fibre into carbon fibre. In the first subset, 3 experiments were chosen that varied in speed of processing line. The 3 speeds were 14(exp 1),22 (exp 2) and 30 (exp 3) in metre/hour. It can be seen that with the change in line speed both strength and stiffness change from Zone 1 to Zone 4 in the oxidation process and then at the carbonisation process this change is not obvious or the difference seems to be lost at the final fibre collection point.
+
+
+```{r standard-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on tenacity and diameter of oxidised fibres"}
+   
 # Filtering only a subset of data where line speed was changed and for only oxidation
-  Experiment_a <- Jilin_carbonisation_data_july2019 %>%
+Experiment_a <- Jilin_carbonisation_data_july2019 %>%
   filter(Experiment %in% c(1,2,3)) %>%
   filter(Zones %in% c("Zone 1","Zone 2","Zone 3", "Zone 4"))
 # Converting chr into numeric and factors
@@ -85,17 +78,17 @@ Experiment_b <- Experiment_a%>%
   mutate(Zones=fct_relevel(Zones,"Zone 1","Zone 2","Zone 3", "Zone 4"))
 # Visualisation 
 Line_speed_plot1 <- ggplot(data=Experiment_b,mapping = aes(x = Diameter, y = Tenacity , colour = Experiment)) +
-  geom_point(alpha = 0.7) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,15,3,4)) + ylab("Tenacity (cN/dtex)") + xlab("Diameter (µm)") + xlim(10,13) + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Strength of fibres during oxidation") + theme(plot.title = element_text(hjust = 0.5))  
+  geom_point(alpha = 0.7) + scale_colour_manual(values = c("red","green","purple"))  + ylab("Tenacity (cN/dtex)") + xlab("Diameter (µm)") + xlim(10,13) + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Strength of fibres during oxidation") + theme(plot.title = element_text(hjust = 0.5))  
 Line_speed_plot1
-# Visualisation of modulus
+
 Line_speed_plot2 <- ggplot(data=Experiment_b,mapping = aes(x = Diameter, y = Ini.Mod , colour = Experiment)) +
-  geom_point(alpha = 0.7) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,15,3,4)) + ylab("Ini. Mod (cN/dtex)") + xlab("Diameter (µm)") + xlim(10,13) + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Stiffness of fibres during oxidation") + theme(plot.title = element_text(hjust = 0.5))  
+  geom_point(alpha = 0.7) + scale_colour_manual(values = c("red","green","purple"))  + ylab("Ini. Mod (cN/dtex)") + xlab("Diameter (µm)") + xlim(10,13) + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Stiffness of fibres during oxidation") + theme(plot.title = element_text(hjust = 0.5))  
 Line_speed_plot2
 
 ```
-```{r carbon-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on tensile strength and diameter of carbon fibres"}
 
-  
+
+```{r carbon-plot, out.width='60%', fig.align='center', fig.height= 4, fig.width=6, fig.cap="Effect of processing speed on tenacity and diameter of carbon fibres"}
 # Filtering data for only carbonisation
 Experiment_c <- Jilin_carbonisation_data_july2019 %>%
   filter(Experiment %in% c(1,2,3)) %>%
@@ -116,10 +109,10 @@ Experiment_d <- Experiment_c%>%
 #str(Experiment_d)
 #Visualisation
 Line_speed_plot3 <- ggplot(data=Experiment_d,mapping = aes(x = Diameter , y = Tenacity, colour = Experiment)) +
-  geom_point(alpha = 0.5) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,7,5,3,4)) + ylab ("Tenacity (cN/dtex)") +  xlab("Diameter (µm)") + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Strength of fibres during carbonisation") + theme(plot.title = element_text(hjust = 0.5))  
+  geom_point(alpha = 0.5) + scale_colour_manual(values = c("red","green","purple"))  + ylab ("Tenacity (cN/dtex)") +  xlab("Diameter (µm)") + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Strength of fibres during carbonisation") + theme(plot.title = element_text(hjust = 0.5))  
 Line_speed_plot3 
 Line_speed_plot4 <- ggplot(data=Experiment_d,mapping = aes(x = Diameter , y = Ini.Mod, colour = Experiment)) +
-  geom_point(alpha = 0.5) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,7,5,3,4)) + ylab ("Ini.Mod (cN/dtex)") +  xlab("Diameter (µm)") + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Stiffness of fibres during carbonisation") + theme(plot.title = element_text(hjust = 0.5))  
+  geom_point(alpha = 0.5) + scale_colour_manual(values = c("red","green","purple"))  + ylab ("Ini.Mod (cN/dtex)") +  xlab("Diameter (µm)") + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Stiffness of fibres during carbonisation") + theme(plot.title = element_text(hjust = 0.5))  
 Line_speed_plot4
 ```
 
@@ -137,7 +130,7 @@ It can be seen from the graphs that although there doesn't appear to be differen
 
 
 
-## Favourite tool (optional)
+## Favourite tool 
 
 Some of my favourite functions are `str()`,`filter()`. I enjoyed using `ggplot2`
 
@@ -150,17 +143,15 @@ I easily sailed through the lesson days and activities but I was nervous on prac
 
 # Next steps
 
-Data school has given me skills to manage my data and be able to return to it and reuse it. I would like to polish my R skills down the track. 
+Data school has given me skills to manage my data and to be able to return to it and reuse it. I would like to polish my R skills down the track. 
 
 # My Data School Experience
 
+Data School Focus was a great learning experience. I enjoyed all aspects of data management including tidying, visualisation and creating a markdown document for communication. I am excited that the skills I have learnt will allow me to automate my analysis and will save me time. I will be able to
 
 parts of your Data School experience. What aspects of the program did you really enjoy? How have you
 been applying the skills you have learned in your daily work? Have you been able to transfer this 
 knowledge to your team members? Concrete examples demonstrating this would be useful here
 (meetings/talks/collaborations/new roles). Any descriptions of the personal impact the program has 
 had are welcome here as well!
-Line_speed_plot1 <- ggplot(data=Experiment_b,mapping = aes(x = Diameter, y = Tenacity , colour = Experiment)) +
-  geom_point(alpha = 0.7) + scale_colour_manual(values = c("red","green","purple"))  + scale_shape_manual(values=c(1,2,6,15,3,4)) + ylab("Tenacity (cN/dtex)") + xlab("Diameter (µm)") + xlim(10,13) + facet_grid(~ Zones, scales = ("fixed")) + labs(title = "Oxidation process") + theme(plot.title = element_text(hjust = 0.5))  
-Line_speed_plot1
 
